@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from core.models import Item, Token
-from django.contrib.auth.models import User  # ADD THIS
+from django.contrib.auth.models import User  # ADD THIS IMPORT
 import os
 import random
 
@@ -14,7 +14,7 @@ class Command(BaseCommand):
     help = "Seed items and use existing images"
 
     def handle(self, *args, **options):
-        # CREATE SUPERUSER FIRST
+        # CREATE SUPERUSER FIRST - ADD THIS SECTION
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(
                 username='admin',
