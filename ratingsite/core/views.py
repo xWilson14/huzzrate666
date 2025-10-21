@@ -2,8 +2,49 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Avg, Count
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.http import HttpResponse
 from .models import Item, Token, Rating
 from .forms import TokenLoginForm, RateForm
+
+
+# Simple homepage view - ADD THIS FUNCTION
+def simple_home(request):
+    """Simple homepage that shows the app is working"""
+    return HttpResponse("""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>HuzzRate - Rating App</title>
+        <style>
+            body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+            .container { text-align: center; }
+            .btn { display: inline-block; padding: 12px 24px; margin: 10px; background: #007bff; 
+                   color: white; text-decoration: none; border-radius: 5px; }
+            .btn-admin { background: #28a745; }
+            .btn-login { background: #ffc107; color: black; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🎯 HuzzRate - Rating App</h1>
+            <p>Your app is running successfully! 🚀</p>
+            
+            <div style="margin: 30px 0;">
+                <a href="/login/" class="btn btn-login">🔐 Login with Token</a><br>
+                <a href="/admin/" class="btn btn-admin">⚙️ Admin Panel</a><br>
+                <a href="/leaderboard/" class="btn">📊 View Leaderboard</a>
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h3>Quick Info:</h3>
+                <p><strong>Admin:</strong> admin / admin123</p>
+                <p><strong>Tokens:</strong> Use tokens from seed data to login and rate items</p>
+                <p><strong>Features:</strong> Rate items, view leaderboard, token-based authentication</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """)
 
 
 # Login required decorator
@@ -11,10 +52,9 @@ def login_required(view_func):
     def wrapper(request, *args, **kwargs):
         token = __get_token_from_session(request)
         if not token:
-            messages.error(request, "Please log in to access this page.")
+            messages.error(request, "Please log in with a token to access this page.")
             return redirect('core:login')
         return view_func(request, *args, **kwargs)
-
     return wrapper
 
 
@@ -156,6 +196,8 @@ def leaderboard(request):
         "current_sort": sort_by,
         "all_rated": all_rated,
     })
+
+
 @require_POST
 @login_required
 def reset_ratings(request):
