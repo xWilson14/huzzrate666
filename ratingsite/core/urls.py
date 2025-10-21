@@ -1,21 +1,9 @@
-from django.contrib import admin
-from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-from django.views.static import serve
-from django.urls import re_path
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('core.urls')),  # ← THIS LINE INCLUDES YOUR CORE APP URLs
+    path('', views.index, name='index'),  # Handles the root URL: /
+    path('items/', views.item_list, name='item_list'),
+    path('rate/<int:item_id>/', views.rate_item, name='rate_item'),
+    # Add your other URLs here
 ]
-
-# Serve media files
-urlpatterns += [
-    re_path(r'^media/(?P<path>.*)$', serve, {
-        'document_root': settings.MEDIA_ROOT,
-    }),
-]
-
-# Serve static files
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
