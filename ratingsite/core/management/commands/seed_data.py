@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from core.models import Item, Token
+from django.contrib.auth.models import User  # ADD THIS
 import os
 import random
 
@@ -13,6 +14,17 @@ class Command(BaseCommand):
     help = "Seed items and use existing images"
 
     def handle(self, *args, **options):
+        # CREATE SUPERUSER FIRST
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser(
+                username='admin',
+                email='admin@example.com',
+                password='admin123'
+            )
+            self.stdout.write(self.style.SUCCESS('✅ Superuser created: admin/admin123'))
+        else:
+            self.stdout.write('✅ Superuser already exists')
+
         # Delete existing data
         Item.objects.all().delete()
         Token.objects.all().delete()
@@ -57,5 +69,4 @@ class Command(BaseCommand):
         for i, t in enumerate(tokens, 1):
             self.stdout.write(self.style.SQL_FIELD(f"  {i:2d}. {t}"))
         self.stdout.write(self.style.SUCCESS("=" * 40))
-        self.stdout.write(self.style.NOTICE("Run: python manage.py runserver"))
-        self.stdout.write(self.style.NOTICE("Visit: http://127.0.0.1:8000/"))
+        self.stdout.write(self.style.NOTICE("✅ Seed data completed!"))
