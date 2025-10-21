@@ -1,19 +1,21 @@
-from django.urls import path
-from . import views
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
-app_name = "core"
+from django.views.static import serve
+from django.urls import re_path
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("login/", views.login_view, name="login"),
-    path("logout/", views.logout_view, name="logout"),
-    path("rate/", views.rate_item, name="rate"),
-    path("leaderboard/", views.leaderboard, name="leaderboard"),
-    path("reset/", views.reset_ratings, name="reset"),
+    path('admin/', admin.site.urls),
+    path('', include('core.urls')),  # ← THIS LINE INCLUDES YOUR CORE APP URLs
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve media files
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {
+        'document_root': settings.MEDIA_ROOT,
+    }),
+]
+
+# Serve static files
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
