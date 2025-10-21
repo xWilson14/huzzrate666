@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% block title %}Leaderboard - HuzzRate{% endblock %}
+{% block content %}
+<h2>Leaderboard</h2>
+
+<div class="sort-options">
+    <strong>Sort by:</strong>
+    <a href="?sort=total" class="sort-btn {% if current_sort == 'total' %}active{% endif %}">Total Avg</a>
+    <a href="?sort=appearance" class="sort-btn {% if current_sort == 'appearance' %}active{% endif %}">Appearance</a>
+    <a href="?sort=personality" class="sort-btn {% if current_sort == 'personality' %}active{% endif %}">Personality</a>
+</div>
+
+<div class="leaderboard-container {% if not all_rated %}blurred{% endif %}">
+    <table class="leaderboard">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Item</th>
+                <th>Appearance</th>
+                <th>Personality</th>
+                <th>Total Avg</th>
+                <th>Ratings</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for it in items %}
+            <tr class="{% if forloop.counter <= 3 %}top-three{% endif %}">
+                <td>{{ forloop.counter }}</td>
+                <td class="leader-item">
+                    {% if it.image %}
+                    <img src="{{ it.image.url }}" alt="{{ it.name }}" style="width: 50px; height: 50px; object-fit: contain; border-radius: 6px; margin-right: 10px; border: 1px solid #ddd;">
+                    {% endif %}
+                    {{ it.name }}
+                </td>
+                <td>{{ it.avg_appearance|default:"0.00" }}</td>
+                <td>{{ it.avg_personality|default:"0.00" }}</td>
+                <td><strong>{{ it.avg_total|default:"0.00" }}</strong></td>
+                <td>{{ it.cnt }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No items yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if not all_rated %}
+    <div class="blur-overlay">
+        <div class="overlay-content">
+            <h3>Complete Your Ratings!</h3>
+            <p>Rate all items to unlock the leaderboard</p>
+            <a href="{% url 'core:index' %}" class="btn">Continue Rating</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

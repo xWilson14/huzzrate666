@@ -1,0 +1,93 @@
+{% extends "core/base.html" %}
+{% block title %}Home - HuzzRate{% endblock %}
+{% block content %}
+
+<section class="feed">
+    {% for item in items %}
+    <article class="card">
+        <div class="card-body">
+            <!-- FIXED: 1:1 aspect ratio, no cropping -->
+            {% if item.image %}
+            <div style="width: 100%; display: flex; justify-content: center; margin-bottom: 1rem;">
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="width: 300px; height: 300px; object-fit: contain; border-radius: 8px; border: 1px solid #eee;">
+            </div>
+            {% endif %}
+
+            <h3 class="item-name">{{ item.name }}</h3>
+            <div class="meta">
+                {% if item.id in rated_item_ids %}
+                <span class="avg">Appearance: {{ item.avg_appearance|default:"0.00" }}</span>
+                <span class="avg">Personality: {{ item.avg_personality|default:"0.00" }}</span>
+                <span class="avg">Total: {{ item.avg_total|default:"0.00" }}</span>
+                <span class="count">({{ item.ratings_count }} ratings)</span>
+                {% else %}
+                <span class="avg muted">Vote to reveal scores</span>
+                {% endif %}
+            </div>
+
+            {% if token %}
+                {% if item.id in rated_item_ids %}
+                <div class="rated-note">You rated this ✅</div>
+                {% else %}
+                <form method="post" action="{% url 'core:rate' %}" class="rate-form" data-item="{{ item.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="item_id" value="{{ item.id }}">
+
+                    <div class="rating-scale">
+                        <h4>Appearance</h4>
+                        <div class="score-buttons" aria-label="Rate {{ item.name }} appearance">
+                            {% for i in "123456789"|make_list %}
+                            <button type="button" class="score-btn score-{{ forloop.counter }}" data-score="{{ forloop.counter }}">
+                                {{ forloop.counter }}
+                            </button>
+                            {% endfor %}
+                            <button type="button" class="score-btn score-10" data-score="10">
+                                10
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="rating-scale">
+                        <h4>Personality</h4>
+                        <div class="score-buttons" aria-label="Rate {{ item.name }} personality">
+                            {% for i in "123456789"|make_list %}
+                            <button type="button" class="score-btn score-{{ forloop.counter }}" data-score="{{ forloop.counter }}">
+                                {{ forloop.counter }}
+                            </button>
+                            {% endfor %}
+                            <button type="button" class="score-btn score-10" data-score="10">
+                                10
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden inputs for scores -->
+                    <input type="hidden" name="appearance_score" value="">
+                    <input type="hidden" name="personality_score" value="">
+                </form>
+                {% endif %}
+            {% else %}
+                <div class="login-prompt">Log in with a token to rate - <a href="{% url 'core:login' %}">login</a></div>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <p>No items yet. Run the seed command.</p>
+    {% endfor %}
+</section>
+
+<!-- Leaderboard Popup after rating all items -->
+{% if token and all_rated and request.session.show_leaderboard_popup %}
+<div class="modal-overlay leaderboard-popup open" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+        <button class="modal-close" aria-label="Close">×</button>
+        <h3>🎉 Congratulations!</h3>
+        <p>You've rated all items! Check out the leaderboard to see how your ratings compare.</p>
+        <div class="popup-actions">
+            <a href="{% url 'core:leaderboard' %}" class="btn">View Leaderboard</a>
+            <button class="btn-link close-popup">Continue Browsing</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
