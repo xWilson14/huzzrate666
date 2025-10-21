@@ -7,8 +7,7 @@ from django.urls import re_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # Add your app URLs here if you have any
-    # path('', include('core.urls')),
+    path('', include('core.urls')),  # IMPORTANT: This includes your core app
 ]
 
 # Serve media files in production
