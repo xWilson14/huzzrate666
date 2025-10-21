@@ -14,7 +14,24 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-in-produc
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+# CSRF Trusted Origins
+CSRF_TRUSTED_ORIGINS = [
+    'https://huzzrate666.onrender.com',
+    'https://*.onrender.com',
+]
 
+# If you're still having issues, add these additional settings:
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+CSRF_USE_SESSIONS = False
+
+# For development
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.extend([
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ])
+    
 ALLOWED_HOSTS = [
     'huzzrate666.onrender.com',  # CHANGED: Your actual app name
     'localhost',
