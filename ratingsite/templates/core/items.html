@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Items - HuzzRate</title>
+</head>
+<body>
+    <h1>Rate These Items</h1>
+    
+    {% for item in items %}
+    <div style="border: 1px solid #ccc; padding: 20px; margin: 10px;">
+        <h3>{{ item.name }}</h3>
+        {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-width: 200px;">
+        {% endif %}
+        <p>
+            <a href="/rate/{{ item.id }}/">Rate this item</a>
+        </p>
+    </div>
+    {% empty %}
+    <p>No items available. Run seed data first.</p>
+    {% endfor %}
+    
+    <br>
+    <a href="/">← Back to Home</a>
+</body>
+</html>
