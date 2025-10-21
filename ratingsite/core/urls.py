@@ -9,5 +9,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('rate/', views.rate_item, name='rate_item'),  # This matches your rate_item view
     path('leaderboard/', views.leaderboard, name='leaderboard'),
-    path('reset/', views.reset_ratings, name='reset_ratings'),
+    path('reset/', views.reset_ratings, name='reset'),
 ]
