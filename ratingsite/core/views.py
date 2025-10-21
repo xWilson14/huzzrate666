@@ -93,24 +93,19 @@ def logout_view(request):
 
 @login_required
 def index(request):
+    print("DEBUG: Index view called")  # Add this for debugging
+    
     token = __get_token_from_session(request)
-    items = Item.objects.order_by("-created_at")
-    rated_item_ids = set()
-    all_rated = False
-
-    if token:
-        rated_item_ids = set(token.ratings.values_list("item_id", flat=True))
-        all_rated = (len(rated_item_ids) >= items.count())
-
-    rate_form = RateForm()
+    print(f"DEBUG: Token found: {token}")  # Add this
+    
+    # Simplify for testing - remove complex logic
+    items = Item.objects.all()
+    print(f"DEBUG: Items count: {items.count()}")  # Add this
+    
     return render(request, "core/index.html", {
         "items": items,
         "token": token,
-        "rated_item_ids": rated_item_ids,
-        "rate_form": rate_form,
-        "all_rated": all_rated,
     })
-
 
 @require_POST
 @login_required
