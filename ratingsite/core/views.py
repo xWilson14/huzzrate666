@@ -93,18 +93,31 @@ def logout_view(request):
 
 @login_required
 def index(request):
-    print("DEBUG: Index view called")  # Add this for debugging
-    
     token = __get_token_from_session(request)
-    print(f"DEBUG: Token found: {token}")  # Add this
-    
-    # Simplify for testing - remove complex logic
-    items = Item.objects.all()
-    print(f"DEBUG: Items count: {items.count()}")  # Add this
-    
+    items = Item.objects.order_by("-created_at")
+    rated_item_ids = set()
+    all_rated = False
+
+    if token:
+        rated_item_ids = set(token.ratings.values_list("item_id", flat=True))
+        all_rated = (len(rated_item_ids) >= items.count())
+
+    # Annotate items with ratings data
+    items = items.annotate(
+        avg_appearance=Avg("ratings__appearance_score"),
+        avg_personality=Avg("ratings__personality_score"),
+        ratings_count=Count("ratings")
+    )
+
+    # Calculate total average for each item
+    for item in items:
+        item.avg_total = round(((item.avg_appearance or 0) + (item.avg_personality or 0)) / 2, 2)
+
     return render(request, "core/index.html", {
         "items": items,
         "token": token,
+        "rated_item_ids": rated_item_ids,
+        "all_rated": all_rated,
     })
 
 @require_POST
