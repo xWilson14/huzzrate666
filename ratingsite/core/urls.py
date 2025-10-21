@@ -1,9 +1,13 @@
 from django.urls import path
 from . import views
 
+app_name = 'core'
+
 urlpatterns = [
-    path('', views.index, name='index'),  # Handles the root URL: /
-    path('items/', views.item_list, name='item_list'),
-    path('rate/<int:item_id>/', views.rate_item, name='rate_item'),
-    # Add your other URLs here
+    path('', views.index, name='index'),  # Homepage - uses your existing index view
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('rate/', views.rate_item, name='rate_item'),  # This matches your rate_item view
+    path('leaderboard/', views.leaderboard, name='leaderboard'),
+    path('reset/', views.reset_ratings, name='reset_ratings'),
 ]
